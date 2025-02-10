@@ -5,27 +5,51 @@
 // 4. Create a function called updateStock which updates the quantity of an item. The return needs to be a string.
 // 5. Create a function called checkStock which returns true if the item is available and false otherwise.
 
-type ItemDetails = [string, number, boolean]
+type ItemDetails = [string, number, boolean];
 
 type InventoryItem = {
-
-}
+    itemId: number;
+    details: ItemDetails;
+};
 
 const inventory: InventoryItem[] = [];
 
-function addItem(itemId, itemName, quantity, isAvailable) {
+function addItem(itemId: number, itemName: string, quantity: number, isAvailable: boolean): InventoryItem { let newItem: InventoryItem = {
+itemId,
+details: [itemName, quantity, isAvailable],
+};
+
+inventory.push(newItem);
+return newItem;
 
 }
 
-function updateStock(itemId, quantity) {
+function updateStock(itemId: number, quantity: number): string {
+    let item = inventory.find((inv) => inv.itemId === itemId);
+
+    if(!item) {
+        return "Item doesn´t exist in the system"
+    }
+
+item.details[1] = quantity;
+item.details[2] = quantity > 0;
+
+return `Stock updated for ${item.details[0]}, new quantity: ${quantity}`;
 
 }
 
-function checkStock(itemId) {
+function checkStock(itemId: number): boolean {
+    let item = inventory.find((inv) => inv.itemId === itemId);
+
+    if(!item) {
+        return false;
+    }
+
+    return item.details[2];
 
 }
 
 // Test cases (Create more if needed)
 console.log(addItem(1, "Laptop", 5, true)) // { itemId: 1, details: ["Laptop", 5, true] }
-console.log(updateStock(1, 3)) // "Stock updated for Laptop, new quantity: 3"
+console.log(updateStock(1, 0)) // "Stock updated for Laptop, new quantity: 3"
 console.log(checkStock(1)) // true

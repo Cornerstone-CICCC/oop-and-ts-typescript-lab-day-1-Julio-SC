@@ -8,7 +8,7 @@
 
 enum TransactionType {
   Deposit,
-  Withdraw
+  Withdraw,
 }
 
 type Transaction = {
@@ -23,33 +23,81 @@ type BankAccount = {
   lastname: string;
   balance: number;
   isActive: boolean;
-  transactions: Transaction[]
+  transactions: Transaction[];
+};
+
+let accounts: BankAccount[] = [];
+
+// 1. Crear cuenta bancaria
+function createAccount(accountNo: number, firstname: string, lastname: string, initialDeposit: number, isActive: boolean = true): BankAccount {
+  let newAccount: BankAccount = {
+    accountNo,
+    firstname,
+    lastname,
+    balance: initialDeposit,
+    isActive,
+    transactions: [],
+  };
+
+  accounts.push(newAccount);
+  return newAccount;
 }
 
-const accounts: BankAccount[] = [];
+// 2. Procesar transacciones
+function processTransaction(accountNo: number, amount: number, transactionType: TransactionType): string {
+  let account = accounts.find((acc: BankAccount) => acc.accountNo === accountNo);
 
-function createAccount(accountNo, firstname, lastname, initialDeposit, isActive = true) {
+  if (!account) {
+    return "Account not found";
+  }
 
+  if (!account.isActive) {
+    return "Account is not active";
+  }
+
+  if (transactionType === TransactionType.Withdraw) {
+    if (account.balance < amount) {
+      return "Insufficient funds for withdrawal";
+    }
+    account.balance -= amount;
+  } else if (transactionType === TransactionType.Deposit) {
+    account.balance += amount;
+  }
+
+  let transaction: Transaction = { accountNo, amount, type: transactionType };
+  account.transactions.push(transaction);
+
+  return `${amount} ${transactionType === TransactionType.Deposit ? "deposited" : "withdrawn"} into account number ${accountNo}`;
 }
 
-function processTransaction(accountNo, amount, transactionType) {
-
+// 3. Obtener saldo
+function getBalance(accountNo: number): number | string {
+  let account = accounts.find((acc: BankAccount) => acc.accountNo === accountNo);
+  return account ? account.balance : "Account not found";
 }
 
-function getBalance(accountNo) {
-
+// 4. Obtener historial de transacciones
+function getTransactionHistory(accountNo: number): Transaction[] | string {
+  let account = accounts.find((acc: BankAccount) => acc.accountNo === accountNo);
+  return account ? account.transactions : "Account not found";
 }
 
-function getTransactionHistory(accountNo) {
-
+// 5. Verificar si la cuenta está activa
+function checkActiveStatus(accountNo: number): boolean | string {
+  let account = accounts.find((acc: BankAccount) => acc.accountNo === accountNo);
+  return account ? account.isActive : "Account not found";
 }
 
-function checkActiveStatus(accountNo) {
+// 6. Cerrar cuenta
+function closeAccount(accountNo: number): string {
+  let accountIndex = accounts.findIndex((acc: BankAccount) => acc.accountNo === accountNo);
 
-}
+  if (accountIndex === -1) {
+    return "Account not found";
+  }
 
-function closeAccount(accountNo) {
-
+  accounts.splice(accountIndex, 1);
+  return `Account number ${accountNo} closed`;
 }
 
 // Test cases (students should add more)
